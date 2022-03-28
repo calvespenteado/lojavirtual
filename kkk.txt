@@ -1,0 +1,145 @@
+<? xml version = " 1.0 " encoding = " UTF-8 " ?>
+<!--
+NÃO ALTERE OU REMOVA OS AVISOS DE DIREITOS AUTORAIS OU ESTE CABEÇALHO.
+Copyright (c) 2008, 2016 Oracle e/ou suas afiliadas. Todos os direitos reservados.
+Oracle e Java são marcas registradas da Oracle e/ou de suas afiliadas.
+Outros nomes podem ser marcas registradas de seus respectivos proprietários.
+O conteúdo deste arquivo está sujeito aos termos do GNU
+Licença Pública Geral apenas Versão 2 ("GPL") ou Common
+Licença de Desenvolvimento e Distribuição ("CDDL") (coletivamente, o
+"Licença"). Você não pode usar este arquivo, exceto em conformidade com as
+Licença. Você pode obter uma cópia da Licença em
+http://www.netbeans.org/cddl-gplv2.html
+ou nbbuild/licenses/CDDL-GPL-2-CP. Consulte a Licença para o
+linguagem específica que rege as permissões e limitações sob o
+Licença. Ao distribuir o software, inclua este cabeçalho de licença
+Aviso em cada arquivo e inclua o arquivo de licença em
+nbbuild/licenças/CDDL-GPL-2-CP. A Oracle designa isso
+arquivo específico como sujeito à exceção "Classpath", conforme fornecido
+pela Oracle na seção GPL Versão 2 do arquivo de licença que
+acompanha este código. Se aplicável, adicione o seguinte abaixo do
+Cabeçalho da Licença, com os campos entre colchetes [] substituídos por
+suas próprias informações de identificação:
+"Partes protegidas por direitos autorais [ano] [nome do proprietário dos direitos autorais]"
+Se você deseja que sua versão deste arquivo seja regida apenas pelo CDDL
+ou apenas a GPL Versão 2, indique sua decisão adicionando
+"[Contribuinte] opta por incluir este software nesta distribuição
+sob a licença [CDDL ou GPL Versão 2]." Se você não indicar um
+única escolha de licença, um destinatário tem a opção de distribuir
+sua versão deste arquivo sob o CDDL, GPL Versão 2 ou
+para estender a escolha da licença aos seus licenciados conforme previsto acima.
+No entanto, se você adicionar o código GPL Versão 2 e, portanto, elegeu o código GPL
+Licença da versão 2, a opção se aplica somente se o novo código for
+sujeito a tal opção pelo detentor dos direitos autorais.
+Contribuinte(s):
+-->
+< projeto  default = " -deploy-ant "  basedir = " . " >
+    < nome do destino  = " -init-cl-deployment-env " if = " deploy.ant.enabled " > 
+        < arquivo de propriedades  = " ${deploy.ant.properties.file} " />
+        < arquivo disponível  = " ${deploy.ant.docbase.dir}/WEB-INF/sun-web.xml " propriedade = " sun.web.present " /> 
+        < arquivo disponível  = " ${deploy.ant.docbase.dir}/WEB-INF/glassfish-web.xml " property = " glassfish.web.present " /> 
+        < arquivo disponível  = " ${deploy.ant.resource.dir} " propriedade = " has.setup " /> 
+        < tempfile  prefix = " gfv3 "  property = " gfv3.password.file "  destdir = " ${java.io.tmpdir} " />   <!-- não se esqueça de excluir isso! -->
+        < echo  message = " AS_ADMIN_PASSWORD=${gfv3.password} "  arquivo = " ${gfv3.password.file} " />
+    </ alvo >
+
+    < nome do destino  = " -parse-sun-web " depende = " -init-cl-deployment-env " if = " sun.web.present " >  
+        < tempfile  prefix = " gfv3 "  property = " temp.sun.web "  destdir = " ${java.io.tmpdir} " />
+        < copiar  arquivo = " ${deploy.ant.docbase.dir}/WEB-INF/sun-web.xml "  tofile = " ${temp.sun.web} " />
+        <!-- O doctype aciona a resolução que pode falhar -->
+        < substituir  arquivo = " ${temp.sun.web} " >
+            < replacetoken > <![CDATA[ <!DOCTYPE ]]> </ replacetoken >
+            < replacevalue > <![CDATA[ <!-- <!DOCTYPE ]]> </ replacevalue >
+        </ substituir >
+        < substituir  arquivo = " ${temp.sun.web} " >
+            < replacetoken > <![CDATA[ <sun-web-app ]]> </ replacetoken >
+            < replacevalue > <![CDATA[ --> <sun-web-app ]]> </ replacevalue >
+        </ substituir >
+        < xmlproperty  file = " ${temp.sun.web} "  validar = " false " >
+        </ xmlpropriedade >    
+        < delete  file = " ${temp.sun.web} " />
+        < propriedade de condição  = " deploy.ant.client.url " value = " ${gfv3.url}${sun-web-app.context-root} " else = " ${gfv3.url}/${ant.project .name} " >  
+            < propriedade isset  = " sun-web-app.context-root " />
+        </ condição >
+        < propriedade de condição  = " deploy.context.root.argument " value = " & contextroot=${sun-web-app.context-root} " else = " /${ant.project.name} " >  
+            < propriedade isset  = " sun-web-app.context-root " />
+        </ condição >
+    </ alvo >
+    < target  name = " -parse-glassfish-web "  depende = " -init-cl-deployment-env "  if = " glassfish.web.present " >
+        < tempfile  prefix = " gfv3 "  property = " temp.gf.web "  destdir = " ${java.io.tmpdir} " />
+        < copy  file = " ${deploy.ant.docbase.dir}/WEB-INF/glassfish-web.xml "  tofile = " ${temp.gf.web} " />
+        <!-- O doctype aciona a resolução que pode falhar -->
+        < substituir  arquivo = " ${temp.gf.web} " >
+            < replacetoken > <![CDATA[ <!DOCTYPE ]]> </ replacetoken >
+            < replacevalue > <![CDATA[ <!-- <!DOCTYPE ]]> </ replacevalue >
+        </ substituir >
+        < substituir  arquivo = " ${temp.gf.web} " >
+            < replacetoken > <![CDATA[ <glassfish-web-app ]]> </ replacetoken >
+            < replacevalue > <![CDATA[ --> <glassfish-web-app ]]> </ replacevalue >
+        </ substituir >
+        < xmlproperty  file = " ${temp.gf.web} "  validar = " false " >
+        </ xmlpropriedade >
+        < delete  file = " ${temp.gf.web} " />
+        < propriedade de condição  = " deploy.ant.client.url " value = " ${gfv3.url}${glassfish-web-app.context-root} " else = " ${gfv3.url}/${ant.project .name} " >  
+            < propriedade isset  = " glassfish-web-app.context-root " />
+        </ condição >
+        < propriedade de condição  = " deploy.context.root.argument " value = " & contextroot=${glassfish-web-app.context-root} " else = " /${ant.project.name} " >  
+            < propriedade isset  = " glassfish-web-app.context-root " />
+        </ condição >
+    </ alvo >
+    < target  name = " -no-parse-sun-web "  depende = " -init-cl-deployment-env "  a menos que = " sun.web.present " >
+        < nome da propriedade  = " deploy.context.root.argument " value = " " /> 
+    </ alvo >
+    < nome do destino  = " -add-resources " depende = " -init-cl-deployment-env " if = " has.setup " >  
+        < tempfile  prefix = " gfv3 "  property = " gfv3.resources.dir "  destdir = " ${java.io.tmpdir} " />
+        < mkdir  dir = " ${gfv3.resources.dir} " />
+        < mkdir  dir = " ${gfv3.resources.dir}/META-INF " />
+        < copiar  todir = " ${gfv3.resources.dir}/META-INF " >
+            < fileset  dir = " ${deploy.ant.resource.dir} " />
+        </ copiar >
+        < jar  destfile = " ${deploy.ant.archive} "  update = " true " >
+            < fileset  dir = " ${gfv3.resources.dir} " />
+        </ jar >
+        < delete  dir = " ${gfv3.resources.dir} " />
+    </ alvo >
+    < target  name = " -deploy-ant "  depende = " -parse-glassfish-web, -parse-sun-web, -no-parse-sun-web,-add-resources "  if = " deploy.ant.enabled " >
+        < antcall  target = " -deploy-without-pw " />
+        < antcall  target = " -deploy-with-pw " />
+    </ alvo >
+
+    < target  name = " -deploy-without-pw "  a menos que = " gfv3.password " >
+        < echo  message = " Implantando ${deploy.ant.archive} " />
+        < tempfile  prefix = " gfv3 "  property = " gfv3.results.file "  destdir = " ${java.io.tmpdir} " />   <!-- não se esqueça de excluir isso! -->
+        < nome da propriedade  = " full.deploy.ant.archive " location = " ${deploy.ant.archive} " /> 
+        < get  src = " ${gfv3.admin.url}/__asadmin/deploy?path=${full.deploy.ant.archive}${deploy.context.root.argument} & force=true & name=$ {ant.project.name} "
+            dest = " ${gfv3.results.file} " />
+        < delete  file = " ${gfv3.results.file} " />    
+    </ alvo >
+    < target  name = " -deploy-with-pw "  if = " gfv3.password " >
+        < echo  message = " Implantando ${deploy.ant.archive} " />
+        < tempfile  prefix = " gfv3 "  property = " gfv3.results.file "  destdir = " ${java.io.tmpdir} " />   <!-- não se esqueça de excluir isso! -->
+        < nome da propriedade  = " full.deploy.ant.archive " location = " ${deploy.ant.archive} " /> 
+        < obter nome de  usuário = " ${gfv3.username} "  senha = " ${gfv3.password} "  src = " ${gfv3.admin.url}/__asadmin/deploy?path=${full.deploy.ant.archive} ${deploy.context.root.argument} & force=true & name=${ant.project.name} "
+            dest = " ${gfv3.results.file} " />
+        < delete  file = " ${gfv3.results.file} " />
+    </ alvo >
+    < nome do destino  = " -undeploy-ant " depende = " -init-cl-deployment-env " if = " deploy.ant.enabled " >  
+        < antcall  target = " -undeploy-without-pw " />
+        < antcall  target = " -undeploy-with-pw " />
+    </ alvo >
+
+    < target  name = " -undeploy-without-pw "  a menos que = " gfv3.password " >
+        < echo  message = " Removendo a implantação ${deploy.ant.archive} " />
+        < tempfile  prefix = " gfv3 "  property = " gfv3.results.file "  destdir = " ${java.io.tmpdir} " />   <!-- não se esqueça de excluir isso! -->
+        < get  src = " ${gfv3.admin.url}/__asadmin/undeploy?name=${ant.project.name} "
+            dest = " ${gfv3.results.file} " />
+        < delete  file = " ${gfv3.results.file} " />    
+    </ alvo >
+    < target  name = " -undeploy-with-pw "  if = " gfv3.password " >
+        < echo  message = " Removendo a implantação ${deploy.ant.archive} " />
+        < tempfile  prefix = " gfv3 "  property = " gfv3.results.file "  destdir = " ${java.io.tmpdir} " />   <!-- não se esqueça de excluir isso! -->
+        < obter nome de  usuário = " ${gfv3.username} "  senha = " ${gfv3.password} "  src = " ${gfv3.admin.url}/__asadmin/undeploy?name=${ant.project.name} "
+            dest = " ${gfv3.results.file} " />
+        < delete  file = " ${gfv3.results.file} " />
+    </ alvo >
+</ projeto >
