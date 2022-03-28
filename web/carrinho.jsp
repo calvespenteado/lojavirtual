@@ -64,12 +64,12 @@
                 <button class="btn"> OK </button>
             </div>
             <p>
-                <a href="sys?logica=Carrinho&action=cep"> Não sei meu CEP </a>
+                <a href="sys?logica=Carrinho&action=cep"> NÃ£o sei meu CEP </a>
             </p>
             <div class="well">
-                <h4>Atenção:</h4>
+                <h4>AtenÃ§Ã£o:</h4>
                 <p>
-                    O prazo começa a contar a partir da aprovação do pagamento.<br>
+                    O prazo comeÃ§a a contar a partir da aprovaÃ§Ã£o do pagamento.<br>
                     Os produtos podem ser entregues separadamente.<br>
                 </p>
             </div>
@@ -82,7 +82,7 @@
         </strong>
         <h3 style="border-top: solid 2px #222;padding: 10px 0">Total:<f:formatNumber minFractionDigits="2" currencySymbol="R$">${total+frete}</f:formatNumber></h3>
 
-            <p><strong>Possui cupom ou vale? </strong>Você poderá usá-los na etapa de pagamento.</p>
+            <p><strong>Possui cupom ou vale? </strong>VocÃª poderÃ¡ usÃ¡-los na etapa de pagamento.</p>
     </div>
 
 </div>
