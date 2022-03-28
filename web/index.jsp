@@ -49,7 +49,7 @@
                 </div>
             </nav>
             <header class="jumbotron">
-                <h2>LojaWEB.</h2><h3> Tudo em um só lugar...</h3>
+                <h2>LojaWEB.</h2><h3> Tudo em um sÃ³ lugar...</h3>
             </header>
             <section class="container row">
             <c:choose>
